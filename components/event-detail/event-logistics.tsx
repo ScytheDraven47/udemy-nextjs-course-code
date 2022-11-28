@@ -6,10 +6,15 @@ import { Event as EventType } from '../../types/event'
 
 function EventLogistics({
 	date,
-	location: address,
+	address,
 	image,
-	title: imageAlt,
-}: EventType) {
+	imageAlt,
+}: {
+	date: string
+	address: string
+	image: string
+	imageAlt: string
+}) {
 	const humanReadableDate: string = new Date(date).toLocaleDateString('en-US', {
 		day: 'numeric',
 		month: 'long',
