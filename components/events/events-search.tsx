@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { FormEvent, FormEventHandler, useRef } from 'react'
 
 import Button from '../ui/button'
 
@@ -19,12 +19,14 @@ const MONTHS = [
 	{ id: 12, longName: 'December' },
 ]
 
-function EventsSearch({ onSearch }) {
-	const yearInputRef = useRef()
-	const monthInputRef = useRef()
+function EventsSearch({ onSearch }: { onSearch: Function }) {
+	const yearInputRef = useRef<HTMLSelectElement>(null)
+	const monthInputRef = useRef<HTMLSelectElement>(null)
 
-	function submitHandler(e) {
+	function submitHandler(e: FormEvent) {
 		e.preventDefault()
+
+		if (!yearInputRef.current || !monthInputRef.current) return
 
 		const selectedYear = yearInputRef.current.value
 		const selectedMonth = monthInputRef.current.value
