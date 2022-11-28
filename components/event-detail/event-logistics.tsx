@@ -11,8 +11,8 @@ function EventLogistics({
 	imageAlt,
 }: {
 	date: string
-	address: string
-	image: string
+	address: string | null
+	image: string | null
 	imageAlt: string
 }) {
 	const humanReadableDate: string = new Date(date).toLocaleDateString('en-US', {
