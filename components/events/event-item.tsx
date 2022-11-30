@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 import Button from '../ui/button'
 import DateIcon from '../icons/date-icon'
 import AddressIcon from '../icons/address-icon'
@@ -18,7 +20,9 @@ function EventItem({ id, title, image, date, location }: EventType) {
 
 	return (
 		<li className={classes.item}>
-			{image && <img src={'/'.concat(image)} alt='' />}
+			{image && (
+				<Image src={'/'.concat(image)} alt={title} width={250} height={160} />
+			)}
 			<div className={classes.content}>
 				<div className={classes.summary}>
 					<h2>{title}</h2>

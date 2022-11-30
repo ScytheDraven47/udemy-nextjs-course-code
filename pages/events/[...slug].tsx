@@ -11,6 +11,7 @@ import {
 	DateFilter as DateFilterType,
 	Event as EventType,
 } from '../../types/event'
+import Head from 'next/head'
 
 function FilteredEventsPage() {
 	const [filteredEvents, setFilteredEvents] = useState<EventType[]>()
@@ -35,9 +36,17 @@ function FilteredEventsPage() {
 		if (data) setFilteredEvents(data)
 	}, [data])
 
+	let pageHeadData = (
+		<Head>
+			<title>Filtered Events</title>
+			<meta title='description' content={`List of events`} />
+		</Head>
+	)
+
 	if (!dateFilter || dateFilter.month < 1 || dateFilter.month > 12 || error)
 		return (
 			<>
+				{pageHeadData}
 				<ErrorAlert>
 					<p>Invalid filter. Please adjust your values!</p>
 				</ErrorAlert>
@@ -47,12 +56,18 @@ function FilteredEventsPage() {
 			</>
 		)
 
-	if (!filteredEvents) return <p className='center'>Loading...</p>
+	if (!filteredEvents)
+		return (
+			<>
+				{pageHeadData}
+				<p className='center'>Loading...</p>
+			</>
+		)
 
-	console.log({ error, filteredEvents })
 	if (error || filteredEvents.length === 0)
 		return (
 			<>
+				{pageHeadData}
 				<ErrorAlert>
 					<p>No results found</p>
 				</ErrorAlert>
@@ -62,9 +77,20 @@ function FilteredEventsPage() {
 			</>
 		)
 
+	pageHeadData = (
+		<Head>
+			<title>Filtered Events</title>
+			<meta
+				title='description'
+				content={`All events for ${dateFilter.month}/${dateFilter.year}`}
+			/>
+		</Head>
+	)
+
 	const date = new Date(dateFilter.year, dateFilter.month)
 	return (
 		<>
+			{pageHeadData}
 			<ResultsTitle date={date} />
 			<EventList events={filteredEvents} />
 		</>

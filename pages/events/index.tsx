@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 import EventList from '../../components/events/event-list'
@@ -16,6 +17,10 @@ function EventsPage({ events }: { events: EventType[] }) {
 
 	return (
 		<>
+			<Head>
+				<title>All Events</title>
+				<meta name='description' content='Find NextJS events' />
+			</Head>
 			<EventsSearch onSearch={findEventsHandler} />
 			<EventList events={events} />
 		</>

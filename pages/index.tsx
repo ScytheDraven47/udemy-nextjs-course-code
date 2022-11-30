@@ -1,10 +1,20 @@
+import Head from 'next/head'
+
 import EventList from '../components/events/event-list'
 
 import { Event as EventType } from '../types/event'
 import { getFeaturedEvents } from '../helpers/api-util'
 
 function HomePage({ featuredEvents }: { featuredEvents: EventType[] }) {
-	return <EventList events={featuredEvents} />
+	return (
+		<div>
+			<Head>
+				<title>Featured Events</title>
+				<meta name='description' content='Find NextJS events' />
+			</Head>
+			<EventList events={featuredEvents} />
+		</div>
+	)
 }
 
 export async function getStaticProps() {

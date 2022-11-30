@@ -7,6 +7,7 @@ import Button from '../../components/ui/button'
 import { getEventById, getFeaturedEvents } from '../../helpers/api-util'
 import { GetStaticPropsContext } from 'next'
 import { Event as EventType } from '../../types/event'
+import Head from 'next/head'
 
 function EventDetail({ event }: { event: EventType }) {
 	if (!event)
@@ -18,6 +19,10 @@ function EventDetail({ event }: { event: EventType }) {
 
 	return (
 		<div>
+			<Head>
+				<title>{event.title}</title>
+				<meta name='description' content={event.description || ''} />
+			</Head>
 			<EventSummary title={event.title} />
 			<EventLogistics
 				date={event.date}
