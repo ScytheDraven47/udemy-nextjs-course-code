@@ -7,3 +7,8 @@ export interface Event {
 	image: string | null
 	isFeatured: boolean
 }
+
+export interface DateFilter {
+	month: number
+	year: number
+}

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import ResultsTitle from '../../components/events/results-title'
@@ -5,36 +6,51 @@ import EventList from '../../components/events/event-list'
 import Button from '../../components/ui/button'
 import ErrorAlert from '../../components/ui/error-alert'
 
-import { getFilteredEvents } from '../../dummy-data'
+import { useSWRFilteredEvents } from '../../helpers/api-util'
+import {
+	DateFilter as DateFilterType,
+	Event as EventType,
+} from '../../types/event'
 
 function FilteredEventsPage() {
+	const [filteredEvents, setFilteredEvents] = useState<EventType[]>()
+	const [dateFilter, setDateFilter] = useState<DateFilterType | null>(null)
 	const router = useRouter()
 
-	const filterData = router.query.slug
+	useEffect(() => {
+		if (!router.isReady) return
 
-	if (!filterData) {
-		return <p className='center'>Loading...</p>
-	}
+		const filterData = router.query.slug
+		if (!filterData || filterData.length < 2) return
 
-	const year = +filterData[0]
-	const month = +filterData[1]
+		setDateFilter({
+			year: +filterData[0],
+			month: +filterData[1],
+		})
+	}, [router.isReady])
 
-	if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
+	const { data, error } = useSWRFilteredEvents(dateFilter, !!dateFilter)
+
+	useEffect(() => {
+		if (data) setFilteredEvents(data)
+	}, [data])
+
+	if (!dateFilter || dateFilter.month < 1 || dateFilter.month > 12 || error)
 		return (
 			<>
 				<ErrorAlert>
-					<p>Invalid search values</p>
+					<p>Invalid filter. Please adjust your values!</p>
 				</ErrorAlert>
 				<div className='center'>
 					<Button link='/events'>Show All Events</Button>
 				</div>
 			</>
 		)
-	}
 
-	const filteredEvents = getFilteredEvents({ year, month })
+	if (!filteredEvents) return <p className='center'>Loading...</p>
 
-	if (!filteredEvents || filteredEvents.length === 0)
+	console.log({ error, filteredEvents })
+	if (error || filteredEvents.length === 0)
 		return (
 			<>
 				<ErrorAlert>
@@ -46,8 +62,7 @@ function FilteredEventsPage() {
 			</>
 		)
 
-	const date = new Date(year, month - 1)
-
+	const date = new Date(dateFilter.year, dateFilter.month)
 	return (
 		<>
 			<ResultsTitle date={date} />
