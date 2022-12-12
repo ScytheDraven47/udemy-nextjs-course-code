@@ -7,13 +7,16 @@ function NewsletterRegistration() {
 	function registrationHandler(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 
-		let emailInputText = emailInput.current?.value || ''
+		const emailInputText = emailInput.current?.value || ''
 
-		if (!/[\w+.-]+@[\w+.-]+/.test(emailInputText)) return
+		if (!/^[\w+.-]+@[\w+.-]+$/.test(emailInputText)) return
 
 		fetch('/api/registration', {
 			method: 'POST',
 			body: JSON.stringify({ email: emailInputText }),
+			headers: {
+				'Content-Type': 'application/json',
+			},
 		})
 			.then((response) => {
 				if (!response.ok)
