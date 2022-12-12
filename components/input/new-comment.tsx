@@ -20,8 +20,8 @@ function NewComment(props: { onAddComment: Function }) {
 			!enteredEmail ||
 			enteredEmail.trim() === '' ||
 			!enteredEmail.includes('@') ||
-			!enteredName ||
-			enteredName.trim() === '' ||
+			// !enteredName ||
+			// enteredName.trim() === '' ||
 			!enteredComment ||
 			enteredComment.trim() === ''
 		) {
@@ -32,7 +32,7 @@ function NewComment(props: { onAddComment: Function }) {
 		props.onAddComment({
 			email: enteredEmail,
 			name: enteredName,
-			text: enteredComment,
+			comment: enteredComment,
 		})
 	}
 

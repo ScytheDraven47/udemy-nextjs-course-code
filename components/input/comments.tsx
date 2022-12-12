@@ -16,9 +16,17 @@ function Comments(props: { eventId: string }) {
 	function addCommentHandler(commentData: {
 		email: string
 		name: string
-		text: string
+		comment: string
 	}) {
-		// send data to API
+		fetch('/api/comments', {
+			method: 'POST',
+			body: JSON.stringify(commentData),
+		})
+			.then((response) => {
+				if (!response.ok)
+					throw new Error(`${response.status}: ${response.statusText}`)
+			})
+			.catch((error) => console.error(error))
 	}
 
 	return (
