@@ -4,6 +4,7 @@ import EventList from '../components/events/event-list'
 
 import { Event as EventType } from '../types/event'
 import { getFeaturedEvents } from '../helpers/api-util'
+import NewsletterRegistration from '../components/input/newsletter-registration'
 
 function HomePage({ featuredEvents }: { featuredEvents: EventType[] }) {
 	return (
@@ -12,6 +13,7 @@ function HomePage({ featuredEvents }: { featuredEvents: EventType[] }) {
 				<title>Featured Events</title>
 				<meta name='description' content='Find NextJS events' />
 			</Head>
+			<NewsletterRegistration />
 			<EventList events={featuredEvents} />
 		</div>
 	)

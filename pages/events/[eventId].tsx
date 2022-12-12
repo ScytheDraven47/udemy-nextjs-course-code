@@ -8,6 +8,7 @@ import { getEventById, getFeaturedEvents } from '../../helpers/api-util'
 import { GetStaticPropsContext } from 'next'
 import { Event as EventType } from '../../types/event'
 import Head from 'next/head'
+import Comments from '../../components/input/comments'
 
 function EventDetail({ event }: { event: EventType }) {
 	if (!event)
@@ -33,6 +34,7 @@ function EventDetail({ event }: { event: EventType }) {
 			<EventContent>
 				<p>{event.description}</p>
 			</EventContent>
+			<Comments eventId={event.id} />
 		</div>
 	)
 }

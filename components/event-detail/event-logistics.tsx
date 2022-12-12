@@ -13,7 +13,7 @@ function EventLogistics({
 }: {
 	date: string
 	address: string | null
-	image: string
+	image: string | null
 	imageAlt: string
 }) {
 	const humanReadableDate: string = new Date(date).toLocaleDateString('en-US', {
@@ -27,7 +27,7 @@ function EventLogistics({
 		<section className={classes.logistics}>
 			<div className={classes.image}>
 				<Image
-					src={'/'.concat(image)}
+					src={'/'.concat(image || '')}
 					alt={imageAlt}
 					width={320}
 					height={320}
