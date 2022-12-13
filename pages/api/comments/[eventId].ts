@@ -1,13 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
-type Event = {
-	id: number
-	eventId: string
-	email: string
-	name: string
-	comment: string
-}
-type EventForUI = Omit<Event, 'eventId' | 'email'>
+import { Comment, CommentForUI } from '../../../types/event'
 
 export default async function handler(
 	request: NextApiRequest,
@@ -20,7 +12,7 @@ export default async function handler(
 
 	if (/^GET$/i.test(request.method)) {
 		const { eventId } = request.query
-		const comments: Event[] = [
+		const comments: Comment[] = [
 			{
 				id: 1670807894661,
 				eventId: 'e2',
@@ -50,12 +42,11 @@ export default async function handler(
 				...acc,
 				{
 					id: comment.id,
-					eventId: comment.eventId,
 					name: comment.name,
 					comment: comment.comment,
 				},
 			]
-		}, [] as EventForUI[])
+		}, [] as CommentForUI[])
 
 		response.status(200).json({
 			comments: filteredComments,
@@ -78,7 +69,7 @@ export default async function handler(
 		}
 
 		//? SUCCESS
-		const messageToSave: Event = {
+		const messageToSave: Comment = {
 			id: new Date().getTime(),
 			eventId,
 			email,
