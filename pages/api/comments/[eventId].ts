@@ -1,5 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
+type Event = {
+	id: number
+	eventId: string
+	name: string
+	comment: string
+	email?: string
+}
+
 export default async function handler(
 	request: NextApiRequest,
 	response: NextApiResponse
@@ -10,31 +18,43 @@ export default async function handler(
 	}
 
 	if (/^GET$/i.test(request.method)) {
-		const eventId = request.query?.eventId || null
-		const comments = [
+		const { eventId } = request.query
+		const comments: Event[] = [
 			{
 				id: 1670807894661,
 				eventId: 'e2',
 				name: 'Maximilian',
+				email: '',
 				comment: 'My comment is amazing',
 			},
 			{
 				id: 1670807904146,
 				name: 'Maximilian',
 				eventId: 'e2',
+				email: '',
 				comment: 'My comment is amazing',
 			},
 			{
 				id: 1670807904146,
 				name: 'Maximilian',
 				eventId: 'e3',
+				email: '',
 				comment: 'My comment is amazing',
 			},
 		]
 
-		const filteredComments = comments.filter(
-			(comment) => comment.eventId === eventId
-		)
+		const filteredComments = comments.reduce((acc, comment) => {
+			if (comment.eventId !== eventId) return acc
+			return [
+				...acc,
+				{
+					id: comment.id,
+					eventId: comment.eventId,
+					name: comment.name,
+					comment: comment.comment,
+				},
+			]
+		}, [] as Event[])
 
 		response.status(200).json({
 			comments: filteredComments,
@@ -43,19 +63,23 @@ export default async function handler(
 	}
 
 	if (/^POST$/i.test(request.method)) {
+		const eventId = request.query.eventId as string
 		const { email, name, comment } = JSON.parse(request.body)
 
-		if (!email) {
-			response.status(400).json({ error: 'No email received' })
-			return
-		}
-		if (!comment) {
-			response.status(400).json({ error: 'No comment received' })
+		let errors = []
+		if (!eventId) errors.push('Invalid event id')
+		if (!comment || !comment.trim()) errors.push('Comment is empty')
+		if (!email || !/^[\w+.-]+@[\w+.-]+$/.test(email))
+			errors.push('Invalid email address')
+		if (errors.length > 0) {
+			response.status(422).json({ error: errors.join(', ') })
 			return
 		}
 
 		//? SUCCESS
-		const messageToSave = {
+		const messageToSave: Event = {
+			id: new Date().getTime(),
+			eventId,
 			email,
 			comment,
 			name: name || 'Anonymous',
