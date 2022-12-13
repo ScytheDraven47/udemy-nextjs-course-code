@@ -11,6 +11,8 @@ function Comments(props: { eventId: string }) {
 	const [comments, setComments] = useState([])
 
 	useEffect(() => {
+		if (!showComments) return
+
 		fetch('/api/comments/'.concat(eventId), {
 			method: 'GET',
 		})
@@ -21,7 +23,7 @@ function Comments(props: { eventId: string }) {
 			})
 			.then((data) => setComments(data?.comments || []))
 			.catch((error) => console.error(error))
-	}, [])
+	}, [showComments])
 
 	function toggleCommentsHandler() {
 		setShowComments((prevStatus) => !prevStatus)

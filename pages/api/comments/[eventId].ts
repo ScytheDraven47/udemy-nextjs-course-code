@@ -3,10 +3,11 @@ import { NextApiRequest, NextApiResponse } from 'next'
 type Event = {
 	id: number
 	eventId: string
+	email: string
 	name: string
 	comment: string
-	email?: string
 }
+type EventForUI = Omit<Event, 'eventId' | 'email'>
 
 export default async function handler(
 	request: NextApiRequest,
@@ -54,7 +55,7 @@ export default async function handler(
 					comment: comment.comment,
 				},
 			]
-		}, [] as Event[])
+		}, [] as EventForUI[])
 
 		response.status(200).json({
 			comments: filteredComments,
