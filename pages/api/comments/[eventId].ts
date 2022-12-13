@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Comment, CommentForUI } from '../../../types/event'
+import { getCommentsForEvent, saveComment } from '../../../helpers/db-util'
+import { CommentForUI } from '../../../types/event'
 
 export default async function handler(
 	request: NextApiRequest,
@@ -11,37 +12,15 @@ export default async function handler(
 	}
 
 	if (/^GET$/i.test(request.method)) {
-		const { eventId } = request.query
-		const comments: Comment[] = [
-			{
-				id: 1670807894661,
-				eventId: 'e2',
-				name: 'Maximilian',
-				email: '',
-				comment: 'My comment is amazing',
-			},
-			{
-				id: 1670807904146,
-				name: 'Maximilian',
-				eventId: 'e2',
-				email: '',
-				comment: 'My comment is amazing',
-			},
-			{
-				id: 1670807904146,
-				name: 'Maximilian',
-				eventId: 'e3',
-				email: '',
-				comment: 'My comment is amazing',
-			},
-		]
+		const eventId = request.query.eventId as string
+		const comments = await getCommentsForEvent(eventId)
 
 		const filteredComments = comments.reduce((acc, comment) => {
 			if (comment.eventId !== eventId) return acc
 			return [
 				...acc,
 				{
-					id: comment.id,
+					id: comment._id.toString(),
 					name: comment.name,
 					comment: comment.comment,
 				},
@@ -68,16 +47,8 @@ export default async function handler(
 			return
 		}
 
-		//? SUCCESS
-		const messageToSave: Comment = {
-			id: new Date().getTime(),
-			eventId,
-			email,
-			comment,
-			name: name || 'Anonymous',
-		}
-		console.log(messageToSave)
-		response.status(201).json({})
+		saveComment(email, name, comment, eventId)
+		response.status(201).json({ message: 'Comment saved' })
 		return
 	}
 

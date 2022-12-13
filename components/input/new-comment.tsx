@@ -1,9 +1,10 @@
-import { FormEvent, useRef, useState, MutableRefObject } from 'react'
+import { FormEvent, useRef, useState, MutableRefObject, Ref } from 'react'
 import classes from './new-comment.module.css'
 
 function NewComment(props: { onAddComment: Function }) {
 	const [isInvalid, setIsInvalid] = useState(false)
 
+	const formRef = useRef<HTMLFormElement>(null)
 	const emailInputRef: MutableRefObject<HTMLInputElement | null> = useRef(null)
 	const nameInputRef: MutableRefObject<HTMLInputElement | null> = useRef(null)
 	const commentInputRef: MutableRefObject<HTMLTextAreaElement | null> =
@@ -29,15 +30,18 @@ function NewComment(props: { onAddComment: Function }) {
 			return
 		}
 
-		props.onAddComment({
-			email: enteredEmail,
-			name: enteredName,
-			comment: enteredComment,
-		})
+		props.onAddComment(
+			{
+				email: enteredEmail,
+				name: enteredName,
+				comment: enteredComment,
+			},
+			formRef
+		)
 	}
 
 	return (
-		<form className={classes.form} onSubmit={sendCommentHandler}>
+		<form className={classes.form} onSubmit={sendCommentHandler} ref={formRef}>
 			<div className={classes.row}>
 				<div className={classes.control}>
 					<label htmlFor='email'>Your email</label>

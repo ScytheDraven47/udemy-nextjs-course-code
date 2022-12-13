@@ -1,11 +1,14 @@
-import { FormEvent, useRef } from 'react'
+import { FormEvent, useRef, useState } from 'react'
 import classes from './newsletter-registration.module.css'
 
 function NewsletterRegistration() {
 	const emailInput = useRef<HTMLInputElement>(null)
+	const [isLoading, setIsLoading] = useState(false)
+	const [isRegistered, setIsRegistered] = useState(false)
 
 	function registrationHandler(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
+		setIsLoading(true)
 
 		const emailInputText = emailInput.current?.value || ''
 
@@ -21,6 +24,10 @@ function NewsletterRegistration() {
 			.then((response) => {
 				if (!response.ok)
 					throw new Error(`${response.status}: ${response.statusText}`)
+
+				if (emailInput.current?.value) emailInput.current.value = ''
+				setIsLoading(false)
+				setIsRegistered(true)
 			})
 			.catch((error) => console.error(error))
 	}
@@ -37,7 +44,9 @@ function NewsletterRegistration() {
 						aria-label='Your email'
 						ref={emailInput}
 					/>
-					<button>Register</button>
+					<button disabled={isLoading || isRegistered}>
+						{isRegistered ? 'Thanks!' : 'Register'}
+					</button>
 				</div>
 			</form>
 		</section>

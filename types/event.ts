@@ -14,7 +14,7 @@ export interface DateFilter {
 }
 
 export type Comment = {
-	id: number
+	id: string
 	eventId: string
 	email: string
 	name: string

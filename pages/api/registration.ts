@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { saveNewsletterRegistration } from '../../helpers/db-util'
 
 export default async function handler(
 	request: NextApiRequest,
@@ -17,8 +18,8 @@ export default async function handler(
 			return
 		}
 
-		//? SUCCESS
-		console.log(email)
+		await saveNewsletterRegistration(email)
+
 		response.status(201).json({ message: 'Registration successful' })
 		return
 	}

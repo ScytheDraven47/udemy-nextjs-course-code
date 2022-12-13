@@ -10,7 +10,7 @@ function CommentList({
 			{comments.map(({ id, name, comment }) => (
 				<li key={id}>
 					<p>{comment}</p>
-					<div>By {name}</div>
+					<div>By {name || 'Anonymous'}</div>
 				</li>
 			))}
 		</ul>
