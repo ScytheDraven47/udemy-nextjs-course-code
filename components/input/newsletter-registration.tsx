@@ -1,18 +1,24 @@
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useContext, useRef, useState } from 'react'
+import NotificationContext from '../../store/notification-context'
 import classes from './newsletter-registration.module.css'
 
 function NewsletterRegistration() {
 	const emailInput = useRef<HTMLInputElement>(null)
-	const [isLoading, setIsLoading] = useState(false)
-	const [isRegistered, setIsRegistered] = useState(false)
+	const notificationCtx = useContext(NotificationContext)
 
 	function registrationHandler(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		setIsLoading(true)
 
 		const emailInputText = emailInput.current?.value || ''
+		if (emailInput.current?.value) emailInput.current.value = ''
 
 		if (!/^[\w+.-]+@[\w+.-]+$/.test(emailInputText)) return
+
+		notificationCtx.showNotification({
+			title: 'Signing up...',
+			message: 'Registering for newsletter.',
+			status: 'pending',
+		})
 
 		fetch('/api/registration', {
 			method: 'POST',
@@ -22,14 +28,28 @@ function NewsletterRegistration() {
 			},
 		})
 			.then((response) => {
-				if (!response.ok)
-					throw new Error(`${response.status}: ${response.statusText}`)
+				if (response.ok) return response.json()
 
-				if (emailInput.current?.value) emailInput.current.value = ''
-				setIsLoading(false)
-				setIsRegistered(true)
+				return response.json().then((data) => {
+					throw new Error(
+						data.error || `${response.status}: ${response.statusText}`
+					)
+				})
 			})
-			.catch((error) => console.error(error))
+			.then((data) => {
+				notificationCtx.showNotification({
+					title: 'Success!',
+					message: 'Successfully registered for newsletter.',
+					status: 'success',
+				})
+			})
+			.catch((error) => {
+				notificationCtx.showNotification({
+					title: 'Error!',
+					message: error.message || 'Something went wrong!',
+					status: 'error',
+				})
+			})
 	}
 
 	return (
@@ -44,9 +64,7 @@ function NewsletterRegistration() {
 						aria-label='Your email'
 						ref={emailInput}
 					/>
-					<button disabled={isLoading || isRegistered}>
-						{isRegistered ? 'Thanks!' : 'Register'}
-					</button>
+					<button>Register</button>
 				</div>
 			</form>
 		</section>
