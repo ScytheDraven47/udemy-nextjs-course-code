@@ -44,7 +44,7 @@ async function dbInsertDocument(
 	} catch (error) {
 		result = { error }
 	}
-	client.close()
+	// client.close()
 	return result
 }
 
@@ -73,7 +73,7 @@ async function dbGetRecords(
 	} catch (error) {
 		result = { error }
 	}
-	client.close()
+	// client.close()
 	return result
 }
 
