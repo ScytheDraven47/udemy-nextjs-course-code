@@ -52,7 +52,7 @@ function Comments(props: { eventId: string }) {
 				loadComments()
 			})
 			.then((data) => {
-				if (data.error) throw new Error(data.error)
+				if (data && data.error) throw new Error(data.error)
 			})
 			.catch((error) => console.error(error))
 	}

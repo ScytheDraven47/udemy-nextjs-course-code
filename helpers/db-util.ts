@@ -11,8 +11,8 @@ enum DB_COLLECTIONS {
 	EVENT = 'events',
 }
 
-const dbUser = 'mongoadmin'
-const dbPass = 'biZNfJDEL7dMzWgq'
+const dbUser = process.env.DB_USER
+const dbPass = process.env.DB_PASS
 
 const buildConnectionString = (dbName: DB_NAMES) =>
 	`mongodb+srv://${dbUser}:${dbPass}@cluster0.dbejtkw.mongodb.net/${dbName}?retryWrites=true&w=majority`
