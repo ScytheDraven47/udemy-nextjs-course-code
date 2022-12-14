@@ -17,15 +17,35 @@ const dbPass = 'biZNfJDEL7dMzWgq'
 const buildConnectionString = (dbName: DB_NAMES) =>
 	`mongodb+srv://${dbUser}:${dbPass}@cluster0.dbejtkw.mongodb.net/${dbName}?retryWrites=true&w=majority`
 
-async function dbInsertOne(
+const connect = async (dbName: DB_NAMES) =>
+	await MongoClient.connect(buildConnectionString(dbName))
+
+async function dbInsertDocument(
 	dbName: DB_NAMES,
 	dbCollection: DB_COLLECTIONS,
-	objectToSave: any
+	document: {}
 ) {
-	const client = await MongoClient.connect(buildConnectionString(dbName))
-	const db = client.db()
-	await db.collection(dbCollection).insertOne(objectToSave)
+	let client
+	let result
+
+	try {
+		client = await connect(dbName)
+	} catch (error) {
+		return { error }
+	}
+
+	try {
+		const db = client.db()
+		const insertedId = await db
+			.collection(dbCollection)
+			.insertOne(document)
+			.then((res) => res.insertedId.toString())
+		result = { error: false, insertedId }
+	} catch (error) {
+		result = { error }
+	}
 	client.close()
+	return result
 }
 
 async function dbGetRecords(
@@ -33,19 +53,34 @@ async function dbGetRecords(
 	dbCollection: DB_COLLECTIONS,
 	filter: {} = {}
 ) {
-	const client = await MongoClient.connect(buildConnectionString(dbName))
-	const db = client.db()
-	const documents = await db
-		.collection(dbCollection)
-		.find(filter)
-		.sort({ _id: -1 })
-		.toArray()
+	let client
+	let result
+
+	try {
+		client = await connect(dbName)
+	} catch (error) {
+		return { error }
+	}
+
+	try {
+		const db = client.db()
+		const documents = await db
+			.collection(dbCollection)
+			.find(filter)
+			.sort({ _id: -1 })
+			.toArray()
+		result = { error: false, documents }
+	} catch (error) {
+		result = { error }
+	}
 	client.close()
-	return documents
+	return result
 }
 
 export async function saveNewsletterRegistration(email: string) {
-	dbInsertOne(DB_NAMES.REGISTRATION, DB_COLLECTIONS.EMAILS, { email })
+	return await dbInsertDocument(DB_NAMES.REGISTRATION, DB_COLLECTIONS.EMAILS, {
+		email,
+	})
 }
 
 export async function saveComment(
@@ -54,7 +89,7 @@ export async function saveComment(
 	comment: string,
 	eventId: string
 ) {
-	dbInsertOne(DB_NAMES.EVENT, DB_COLLECTIONS.COMMENT, {
+	return await dbInsertDocument(DB_NAMES.EVENT, DB_COLLECTIONS.COMMENT, {
 		email,
 		name,
 		comment,

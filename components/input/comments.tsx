@@ -25,11 +25,12 @@ function Comments(props: { eventId: string }) {
 			method: 'GET',
 		})
 			.then((response) => {
-				if (!response.ok)
-					throw new Error(`${response.status}: ${response.statusText}`)
 				return response.json()
 			})
-			.then((data) => setComments(data?.comments || []))
+			.then((data) => {
+				if (data.error) throw new Error(data.error)
+				setComments(data?.comments || [])
+			})
 			.catch((error) => console.error(error))
 	}
 
@@ -46,10 +47,12 @@ function Comments(props: { eventId: string }) {
 			body: JSON.stringify(commentData),
 		})
 			.then((response) => {
-				if (!response.ok)
-					throw new Error(`${response.status}: ${response.statusText}`)
+				if (!response.ok) return response.json()
 				formRef.current?.reset()
 				loadComments()
+			})
+			.then((data) => {
+				if (data.error) throw new Error(data.error)
 			})
 			.catch((error) => console.error(error))
 	}

@@ -13,7 +13,14 @@ export default async function handler(
 
 	if (/^GET$/i.test(request.method)) {
 		const eventId = request.query.eventId as string
-		const comments = await getCommentsForEvent(eventId)
+		const result = await getCommentsForEvent(eventId)
+		if (result.error) {
+			response
+				.status(500)
+				.json({ error: 'Could not connect to server', detail: result.error })
+			return
+		}
+		const comments = result?.documents || []
 
 		const filteredComments = comments.reduce((acc, comment) => {
 			if (comment.eventId !== eventId) return acc
@@ -47,8 +54,17 @@ export default async function handler(
 			return
 		}
 
-		saveComment(email, name, comment, eventId)
-		response.status(201).json({ message: 'Comment saved' })
+		const result = await saveComment(email, name, comment, eventId)
+		if (result.error) {
+			response
+				.status(500)
+				.json({ error: 'Could not connect to server', detail: result.error })
+			return
+		}
+
+		response
+			.status(201)
+			.json({ message: 'Comment saved', insertedId: result.insertedId })
 		return
 	}
 

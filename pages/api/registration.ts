@@ -6,7 +6,7 @@ export default async function handler(
 	response: NextApiResponse
 ) {
 	if (!request.method) {
-		response.status(501).json({ error: `Method not defined` })
+		response.status(501).json({ error: 'Method not defined' })
 		return
 	}
 
@@ -18,9 +18,18 @@ export default async function handler(
 			return
 		}
 
-		await saveNewsletterRegistration(email)
+		const result = await saveNewsletterRegistration(email)
+		if (result.error) {
+			response
+				.status(500)
+				.json({ error: 'Could not connect to server', detail: result.error })
+			return
+		}
 
-		response.status(201).json({ message: 'Registration successful' })
+		response.status(201).json({
+			message: 'Registration successful',
+			insertedId: result.insertedId,
+		})
 		return
 	}
 
